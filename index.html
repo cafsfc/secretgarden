@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CAFS' Secret Garden - Crop Personality Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght%40700&family=Lora:wght%40400%3B700&display=swap" rel="stylesheet">
+  <!-- html2canvas is no longer used for download, but kept if needed for other capture features -->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --primary-gold: #B8860B; /* DarkGoldenrod - a rich, deep gold */
+      --light-gold: #DAA520; /* Goldenrod - a vibrant gold */
+      --soft-cream: #FFF8E1; /* A very light, warm cream */
+      --warm-white: #FCF8E8; /* Slightly whiter than soft-cream */
+      --accent-gold: #FFD700; /* Gold - for subtle highlights */
+      --text-dark: #222; /* Made darker for better readability */
+      --text-light: #444; /* Made darker for better readability */
+      --shadow-color: rgba(0, 0, 0, 0.15);
+      --border-color: rgba(0,0,0,0.08);
+    }
+
+    html, body {
+      box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Lora', serif;
+      /* Updated background to use the image */
+      background-image: url('Background.png'); /* Changed to local path */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed; /* Ensures background stays fixed during scroll */
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px; /* Reduced padding */
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .header-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 0; /* Removed bottom margin to reduce space */
+        opacity: 0; /* Initially hidden for fade-in effect */
+        transition: opacity 0.7s ease-in; /* Transition for fade-in */
+    }
+    .header-content.visible {
+        opacity: 1;
+    }
+
+    /* The header logo, separate from splash logo */
+    .header-logo {
+        width: clamp(180px, 40vw, 350px); /* Increased min/max width for larger logo */
+        height: auto;
+        margin-bottom: 0; /* No bottom margin here, spacing is on header-content */
+        /* Subtle white glow for the logo */
+        filter: drop-shadow(0 0 4px white) drop-shadow(0 0 8px white) drop-shadow(0 0 12px white); /* Adjusted glow for more visibility */
+        opacity: 0; /* Initially hidden, will fade in after splash screen fades out */
+        transition: opacity 0.7s ease-in; /* Fade in with header-content */
+    }
+
+    /* Butterfly GIF styling for the modal */
+    .modal-butterfly-gif {
+        width: clamp(80px, 15vw, 150px); /* Responsive size for butterfly */
+        height: auto;
+        margin-bottom: 10px; /* Space between butterfly and heading */
+        filter: drop-shadow(0 0 3px rgba(255,255,255,0.7)); /* Subtle glow for butterfly */
+    }
+
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      text-align: center;
+      color: var(--primary-gold); /* Gold text */
+      font-size: clamp(2.2rem, 5vw, 3.2rem); /* Responsive font size */
+      text-shadow: 0 0 5px white, 0 0 10px white, 0 0 15px white; /* White glow */
+      letter-spacing: 0.05em;
+      margin: 0; /* Remove default margin as it's in a container */
+    }
+
+    /* Splash Screen Styling */
+    #splashScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: white; /* Start with white background */
+      z-index: 2000;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 1s ease-out, visibility 1s ease-out;
+    }
+
+    .splash-bg-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('Background.png'); /* Changed to local path */
+        background-size: cover;
+        background-position: center;
+        opacity: 0; /* Start invisible */
+        animation: bgFadeIn 1.5s ease-out forwards; /* Fade in background image */
+        z-index: -1; /* Behind content */
+    }
+
+    @keyframes bgFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .splash-content-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        opacity: 0; /* Initially hidden, will fade in after background */
+        animation: contentFadeIn 0.5s ease-out forwards 1.5s; /* Start after background fades */
+        padding: clamp(2rem, 5vw, 3rem);
+        border-radius: 1.5rem;
+        max-width: 600px;
+        width: 90%;
+        box-sizing: border-box;
+    }
+
+    @keyframes contentFadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    #splashLogo {
+      width: clamp(250px, 55vw, 450px);
+      height: auto;
+      margin-bottom: 20px; /* Space between logo and button */
+      opacity: 0; /* Start hidden */
+      transform: scale(2); /* Start zoomed in */
+      animation: logoFadeZoomOut 2s ease-out forwards 2s; /* Start after contentFadeIn */
+      /* Subtle white glow for the logo */
+      filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px white) drop-shadow(0 0 6px white); /* Corrected property name */
+    }
+
+    @keyframes logoFadeZoomOut {
+      from { opacity: 0; transform: scale(2); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* No specific animation for splash logo on exit, it will fade with splashScreen.hidden */
+
+
+    #takeTestBtn {
+      background-color: var(--primary-gold);
+      color: white;
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 0.8rem;
+      cursor: pointer;
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      opacity: 0; /* Start hidden */
+      animation: buttonFadeIn 0.5s ease-out forwards 1.8s; /* Button appears by 2.3s */
+      display: flex; /* To center text */
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap; /* Ensure text fits on one line */
+    }
+
+    #takeTestBtn:hover {
+      background-color: var(--light-gold);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    @keyframes buttonFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Class to hide splash screen */
+    #splashScreen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+
+    .quiz-container {
+      background: var(--soft-cream);
+      border-radius: 1.5rem; /* Larger border-radius for elegance */
+      padding: clamp(1.5rem, 5vw, 2.5rem); /* Responsive padding */
+      max-width: 750px; /* Slightly wider */
+      width: 95%; /* Responsive width */
+      box-shadow: 0 10px 30px var(--shadow-color); /* More pronounced shadow */
+      border: 1px solid var(--border-color);
+      z-index: 1;
+      position: relative; /* For potential future internal elements */
+      margin-top: 0; /* Removed top margin to remove space */
+      opacity: 0; /* Initially hidden for fade-in effect */
+      transition: opacity 0.7s ease-in; /* Transition for fade-in */
+    }
+
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 0.5rem;
+      margin-bottom: 2rem;
+      overflow: hidden;
+      height: 0.6rem; /* Thinner progress bar */
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: var(--light-gold); /* Golden loading bar on quiz page */
+      border-radius: 0.5rem;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .question-wrapper {
+      min-height: 280px; /* Consistent height for smooth transitions */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 1rem; /* Inner padding for questions */
+    }
+
+    .question {
+      display: none;
+      animation: fadeIn 0.7s ease-out forwards; /* Longer fade in */
+    }
+
+    .question.active {
+      display: block;
+    }
+
+    .question h3 {
+      font-family: 'Playfair Display', serif;
+      color: var(--primary-gold);
+      margin-bottom: 1.5rem;
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .options label {
+      display: block;
+      background: var(--warm-white);
+      padding: 1rem 1.2rem; /* More generous padding */
+      margin: 0.8rem 0;
+      border-radius: 0.75rem; /* Softer rounded corners */
+      cursor: pointer;
+      border: 2px solid var(--border-color);
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08); /* Softer shadow */
+    }
+
+    .options label:hover {
+      background: #FFFAE6; /* Very light golden on hover */
+      border-color: var(--light-gold);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    .options input[type="radio"] {
+      display: none;
+    }
+
+    .options input[type="radio"]:checked + label {
+      background: var(--golden-checked);
+      border-color: var(--primary-gold);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transform: scale(1.01); /* Subtle pop */
+      position: relative;
+      z-index: 2; /* Ensure checked item is on top */
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2.5rem;
+      gap: 1rem; /* Space between buttons */
+    }
+
+    .navigation-buttons button {
+      background-color: var(--light-gold);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.8rem; /* Responsive padding */
+      border-radius: 0.6rem;
+      cursor: pointer;
+      font-size: clamp(1.5rem, 4vw, 2rem); /* Larger font size for arrows */
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .navigation-buttons button:hover:not(:disabled) {
+      background-color: var(--primary-gold);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    .navigation-buttons button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+      opacity: 0.6;
+      box-shadow: none;
+      transform: translateY(0);
+    }
+
+    #submitQuiz { /* This button is now removed from display logic */
+      display: none;
+    }
+
+    #result {
+      display: none;
+      margin-top: 1rem; /* Added top margin */
+      padding: clamp(2rem, 6vw, 3rem);
+      background: var(--soft-cream);
+      border-radius: 2rem; /* Even larger border-radius */
+      border: 2px dashed var(--light-gold);
+      text-align: center;
+      box-shadow: 0 12px 35px var(--shadow-color);
+      animation: fadeIn 1s ease-out forwards; /* Slower fade in */
+      max-width: 700px;
+      width: 95%;
+      position: relative;
+      z-index: 0;
+    }
+
+    #result h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--primary-gold);
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-top: 0; /* No top margin */
+      margin-bottom: 0; /* No bottom margin */
+      letter-spacing: 0.03em;
+    }
+    #result img {
+      max-width: clamp(180px, 35vw, 300px); /* Slightly bigger image size */
+      height: auto;
+      border-radius: 1.2rem;
+      margin: 0 auto 0; /* Adjusted margin: 0 top, auto left/right, 0 bottom */
+      display: block; /* Ensure image is a block element for margin auto to work */
+      border: none; /* No border */
+      box-shadow: none; /* No shadow for the image itself */
+      animation: scaleIn 1s ease-out forwards; /* Longer scale in */
+      transition: transform 0.3s ease;
+    }
+    #result img:hover {
+        transform: scale(1.03); /* Subtle hover for image */
+    }
+    #result p {
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      line-height: 1.8;
+      margin-bottom: 0.8rem;
+      color: var(--text-light);
+    }
+    /* Specific styling for details text in result panel */
+    #result p.details { /* Targeted specifically for details paragraph */
+      text-align: justify; /* Justify text */
+    }
+    #result .category, #result .description-title {
+      font-weight: bold;
+      color: var(--primary-gold);
+      margin-top: 1.5rem;
+      font-size: clamp(1.1rem, 2.8vw, 1.3rem);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center; /* Ensure description title is centered */
+    }
+    #result .scientific-name {
+      font-style: italic;
+      color: var(--text-light);
+      font-size: clamp(0.9rem, 2.2vw, 1rem);
+      margin-top: 0.2rem; /* Reduced space */
+      margin-bottom: 1rem;
+    }
+    #result .quote {
+      font-family: 'Playfair Display', serif; /* Quote in Playfair */
+      font-style: italic;
+      color: var(--primary-gold);
+      margin-top: 2rem;
+      font-size: clamp(1.1rem, 2.7vw, 1.25rem);
+      padding: 1rem 1.5rem;
+      background-color: #FFFDE7; /* Very light golden background for quote */
+      border-left: 5px solid var(--light-gold);
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .divider {
+      border-top: 1px dashed var(--light-gold); /* Dashed gold divider */
+      margin: 2rem auto;
+      width: 95%; /* Extended width */
+    }
+
+    /* Consolidated action buttons container */
+    #actionButtons {
+      margin-top: 2.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      width: 95%;
+      max-width: 750px;
+      display: none; /* Hidden by default, shown by JS */
+    }
+
+    #actionButtons button {
+      background-color: var(--primary-gold);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex; /* Enable flexbox for content alignment */
+      align-items: center; /* Center content vertically */
+      justify-content: center; /* Center horizontally */
+    }
+
+    #actionButtons button:hover:not(:disabled) {
+      background-color: var(--light-gold);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Loading state for buttons */
+    .loading-button {
+      cursor: not-allowed !important;
+      opacity: 0.7;
+      background-color: #cccccc !important;
+      transform: translateY(0) !important;
+      box-shadow: none !important;
+    }
+
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      width: 1em; /* Relative to font size */
+      height: 1em; /* Relative to font size */
+      animation: spin 1s linear infinite;
+      margin-left: 0.5em; /* Space between text and spinner */
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+
+    /* Loading Overlay Animation */
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background for overlay */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.6s ease-out, visibility 0.6s ease-out; /* Smoother transition */
+    }
+
+    #loadingOverlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .loading-bar-container {
+      width: 80%;
+      max-width: 500px;
+      height: 20px;
+      background-color: rgba(224, 224, 224, 0.5); /* Semi-transparent track to show body background */
+      border-radius: 10px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+      position: relative;
+      margin-top: 50px;
+    }
+
+    #loadingBarInner {
+      height: 100%;
+      width: 0%;
+      /* Background image fill for the loading bar */
+      background-image: url('Background.png'); /* Changed to local path */
+      background-size: cover;
+      background-position: center;
+      border-radius: 10px;
+      transition: width 2.5s linear; /* Slightly longer animation */
+    }
+
+    #loadingKey {
+      position: absolute;
+      top: 50%; /* Center vertically */
+      left: 0%;
+      width: 180px; /* Made key larger */
+      height: auto;
+      transform: translate(-50%, -50%); /* Center precisely, initial transform */
+      animation: flyAcross 2.5s linear forwards; /* Only horizontal movement */
+      display: none;
+      z-index: 1001; /* Ensure key is above the loading bar */
+    }
+
+    #loadingOverlay.active #loadingKey {
+        display: block;
+    }
+
+    #loadingText {
+        font-family: 'Lora', serif;
+        color: var(--text-dark);
+        font-size: clamp(1.1rem, 3vw, 1.5rem);
+        margin-top: 20px;
+        opacity: 0;
+        animation: fadeIn 0.5s forwards 0.5s; /* Fade in after a short delay */
+    }
+
+    .dot-wave {
+        animation: wave 1.4s infinite ease-in-out;
+    }
+    .dot-wave:nth-child(1) { animation-delay: 0.1s; }
+    .dot-wave:nth-child(2) { animation-delay: 0.2s; }
+    .dot-wave:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes flyAcross {
+      0% { left: 0%; transform: translate(-50%, -50%); } /* Ensure initial vertical centering */
+      100% { left: 100%; transform: translate(-50%, -50%); } /* Ensure final vertical centering */
+    }
+
+    @keyframes wave {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000; /* Above everything else */
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: var(--soft-cream);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 450px;
+      width: 90%;
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      position: relative; /* Needed for absolute positioning of close button */
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .modal-content h3 {
+      font-family: 'Playfair Display', serif;
+      color: var(--primary-gold);
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .modal-content p {
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      color: var(--text-dark);
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      flex-direction: column; /* Stack buttons vertically */
+      align-items: center; /* Center buttons */
+      gap: 0.8rem; /* Space between stacked buttons */
+      margin-top: 1.5rem; /* Space above buttons */
+    }
+
+    .modal-buttons button {
+      background-color: var(--primary-gold);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      width: 80%; /* Make buttons wider in modal */
+      max-width: 250px; /* Limit max width */
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .modal-buttons button:hover {
+      background-color: var(--light-gold);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .modal-buttons .cancel-btn {
+      background-color: #888;
+      margin-top: 1rem; /* Separate cancel button more */
+    }
+
+    .modal-buttons .cancel-btn:hover {
+      background-color: #666;
+    }
+
+    /* Dark Mode specific styles for capture */
+    .dark-mode-capture {
+      background: #1a1a1a !important; /* Very dark grey background */
+      border-color: #444444 !important; /* Darker grey border */
+    }
+
+    .dark-mode-capture h2,
+    .dark-mode-capture .category,
+    .dark-mode-capture .description-title {
+      color: #FFD700 !important; /* Bright gold for headings */
+      text-shadow: none !important; /* Remove text shadow for dark mode capture */
+    }
+
+    .dark-mode-capture p {
+      color: #f0f0f0 !important; /* Off-white text for paragraphs */
+      text-shadow: none !important; /* Remove text shadow for dark mode capture */
+    }
+
+    .dark-mode-capture .quote {
+      background-color: #2a2a2a !important; /* Slightly lighter dark background for quote */
+      border-left-color: #FFD700 !important; /* Bright gold border for quote */
+      color: #f0f0f0 !important; /* Off-white text for quote */
+    }
+
+    .dark-mode-capture .divider {
+      border-top-color: #444444 !important; /* Darker border for divider */
+    }
+
+    /* Instagram Follow Modal Specific Styles */
+    #instagramFollowModal .modal-content {
+        background: linear-gradient(145deg, #FFF8E1, #FCF8E8); /* Soft cream gradient */
+        border: 2px solid var(--light-gold);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        padding: clamp(1.5rem, 5vw, 2.5rem);
+        max-width: 500px;
+    }
+
+    #instagramFollowModal .modal-content h3 {
+        color: var(--primary-gold);
+        font-size: clamp(1.6rem, 5vw, 2.2rem);
+        margin-bottom: 0.8rem;
+        text-shadow: 0 0 5px rgba(255,255,255,0.7);
+    }
+
+    #instagramFollowModal .modal-content p {
+        font-size: clamp(1rem, 2.8vw, 1.15rem);
+        color: var(--text-dark);
+        margin-bottom: 0.5rem; /* Reduced margin for text below QR */
+        line-height: 1.6;
+    }
+
+    /* New styles for the list and link */
+    .keep-magic-text {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.1rem, 3vw, 1.4rem);
+        color: var(--primary-gold);
+        margin-top: 1.5rem;
+        margin-bottom: 0.8rem;
+        font-weight: bold;
+        text-align: center; /* Centered as requested */
+    }
+
+    .magic-list {
+        list-style: decimal; /* Use decimal for numbered list */
+        padding-left: 1.5rem; /* Add padding for numbers */
+        margin: 0 auto; /* Center the list itself */
+        text-align: left; /* Make list items left-aligned */
+        font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+        color: var(--text-dark);
+        line-height: 1.6;
+        max-width: 80%; /* Constrain width to help with centering */
+    }
+
+    .magic-list li {
+        margin-bottom: 0.5rem;
+    }
+
+    .magic-list a {
+        color: var(--primary-gold);
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.2s ease;
+    }
+
+    .magic-list a:hover {
+        color: var(--light-gold);
+        text-decoration: underline;
+    }
+
+
+    #instagramFollowModal .instagram-qr-code {
+        /* Removed as per request */
+        display: none;
+    }
+
+    #instagramFollowModal .instagram-handle {
+        /* This element is now removed from HTML as per request, but keeping style for reference */
+        display: none;
+    }
+
+    #instagramFollowModal .modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        margin-top: 2rem; /* Adjusted margin for the buttons */
+    }
+
+    #instagramFollowModal .modal-buttons button {
+        background-color: var(--primary-gold);
+        color: white;
+        padding: 0.9rem 2rem;
+        border-radius: 0.7rem;
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    #instagramFollowModal .modal-buttons button:hover {
+        background-color: var(--light-gold);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    }
+
+    /* Close button styling for modals */
+    .close-modal-btn {
+      position: absolute;
+      top: 30px; /* Increased top spacing */
+      right: 20px; /* Adjusted for more space */
+      background: none;
+      border: none;
+      font-size: 1.8rem; /* Larger 'X' */
+      color: var(--primary-gold);
+      cursor: pointer;
+      padding: 5px;
+      line-height: 1;
+      transition: transform 0.2s ease, color 0.2s ease;
+      font-weight: bold;
+    }
+
+    .close-modal-btn:hover {
+      transform: scale(1.1);
+      color: var(--light-gold);
+    }
+
+
+    /* Media Queries for Responsiveness */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: clamp(1.8rem, 6vw, 2.5rem);
+        margin-bottom: 2rem;
+      }
+      .quiz-container {
+        padding: clamp(1rem, 4vw, 2rem);
+        border-radius: 1rem;
+      }
+      .question-wrapper {
+        min-height: 220px;
+      }
+      .question h3 {
+        font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+        margin-bottom: 1rem;
+      }
+      .options label {
+        padding: 0.8rem 1rem;
+        margin: 0.6rem 0;
+        border-radius: 0.6rem;
+      }
+      .navigation-buttons {
+        margin-top: 2rem;
+        flex-direction: column; /* Stack buttons on smaller screens */
+        gap: 0.8rem;
+      }
+      .navigation-buttons button {
+        padding: 0.7rem 1.2rem;
+        font-size: clamp(1.2rem, 3.5vw, 1.6rem); /* Adjust arrow size for mobile */
+        min-width: unset; /* Remove min-width to allow full flexibility */
+      }
+      #result {
+        padding: clamp(1.5rem, 5vw, 2.5rem);
+        border-radius: 1.5rem;
+        margin-top: 1rem; /* Adjust for mobile */
+      }
+      #result h2 {
+        font-size: clamp(1.8rem, 5.5vw, 2.5rem);
+        margin-top: 0; /* Adjust for mobile */
+      }
+      #result img {
+        max-width: clamp(150px, 30vw, 250px); /* Adjust for mobile */
+        margin: 0 auto 0; /* Adjust for mobile */
+      }
+      #result p {
+        font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+        line-height: 1.6;
+      }
+      #result .category, #result .description-title {
+        font-size: clamp(1rem, 2.6vw, 1.2rem);
+        margin-top: 1rem;
+      }
+      #result .scientific-name {
+        font-size: clamp(0.85rem, 2.1vw, 0.95rem);
+      }
+      #result .quote {
+        font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+        padding: 0.8rem 1.2rem;
+        margin-top: 1.5rem;
+        border-left-width: 3px;
+        border-radius: 0.6rem;
+      }
+      .divider {
+        margin: 1.5rem auto;
+        width: 70%;
+      }
+      #actionButtons {
+        margin-top: 1.5rem;
+        flex-direction: column; /* Stack share buttons too */
+        gap: 0.8rem;
+      }
+      #actionButtons button {
+        max-width: 100%; /* Full width on small screens */
+      }
+      #loadingKey {
+        width: 120px; /* Smaller key on mobile */
+        top: 50%; /* Keep centered */
+      }
+      .header-logo { /* Adjust placeholder size for mobile */
+        width: clamp(100px, 30vw, 200px); /* Increased size for mobile */
+      }
+      .splash-content-wrapper {
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+      }
+      #splashLogo {
+        width: clamp(200px, 50vw, 350px);
+      }
+      /* Instagram Follow Modal Responsive Adjustments */
+      #instagramFollowModal .modal-content {
+          padding: clamp(1rem, 4vw, 2rem);
+      }
+      #instagramFollowModal .modal-buttons button {
+          padding: 0.7rem 1.5rem;
+          font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+      h1 {
+        font-size: clamp(1.6rem, 7vw, 2.2rem);
+        margin-bottom: 1.5rem;
+      }
+      .quiz-container {
+        padding: 1rem;
+        border-radius: 1rem;
+      }
+      .question-wrapper {
+        min-height: 200px;
+      }
+      .question h3 {
+        font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+        margin-bottom: 0.8rem;
+      }
+      .options label {
+        padding: 0.7rem 0.8rem;
+        margin: 0.5rem 0;
+        border-radius: 0.5rem;
+      }
+      .navigation-buttons {
+        margin-top: 1.5rem;
+        gap: 0.6rem;
+      }
+      .navigation-buttons button {
+        padding: 0.6rem 1rem;
+        font-size: clamp(1rem, 3vw, 1.2rem); /* Adjust arrow size for mobile */
+      }
+      #result {
+        padding: 1.5rem;
+        border-radius: 1rem;
+        margin-top: 1rem; /* Adjust for mobile */
+      }
+      #result h2 {
+        font-size: clamp(1.6rem, 6.5vw, 2.2rem);
+        margin-top: 0; /* Adjust for mobile */
+      }
+      #result img {
+        max-width: clamp(120px, 28vw, 180px); /* Adjust for mobile */
+        margin: 0 auto 0; /* Adjust for mobile */
+      }
+      #result p {
+        font-size: clamp(0.9rem, 2.8vw, 1rem);
+        line-height: 1.5;
+      }
+      #result .category, #result .description-title {
+        font-size: clamp(0.95rem, 3.2vw, 1.1rem);
+        margin-top: 0.8rem;
+      }
+      #result .scientific-name {
+        font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+      }
+      #result .quote {
+        font-size: clamp(0.9rem, 3vw, 1rem);
+        padding: 0.7rem 1rem;
+        margin-top: 1rem;
+        border-left-width: 2px;
+        border-radius: 0.5rem;
+      }
+      .divider {
+        margin: 1rem auto;
+        width: 60%;
+      }
+      .loading-bar-container {
+        width: 95%;
+      }
+      #loadingKey {
+        width: 100px;
+        top: 50%; /* Keep centered */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Splash Screen -->
+  <div id="splashScreen">
+    <div class="splash-bg-image"></div> <!-- This will fade in -->
+    <div class="splash-content-wrapper"> <!-- New wrapper for logo, text, button -->
+        <img id="splashLogo" src="Logo.png" alt="Bloom Beyond Logo" loading="lazy" decoding="async"> <!-- Changed to local path -->
+        <button id="takeTestBtn">TAKE THE TEST</button>
+    </div>
+  </div>
+
+  <div class="header-content">
+    <!-- Removed butterfly GIF from here -->
+    <img class="header-logo" src="Logo.png" alt="Bloom Beyond Logo" decoding="async"> <!-- Changed to local path -->
+  </div>
+
+  <div class="quiz-container">
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <form id="quizForm">
+      <div id="questionsContainer" class="question-wrapper"></div>
+      <div class="navigation-buttons">
+        <button type="button" id="prevBtn" disabled>&#x2190;</button> <!-- Left arrow -->
+        <button type="button" id="nextBtn">&#x2192;</button> <!-- Right arrow -->
+      </div>
+    </form>
+  </div>
+
+  <div id="result"></div>
+
+  <!-- Consolidated Action Buttons Container -->
+  <div id="actionButtons">
+    <button id="downloadResultBtn">DOWNLOAD PNG RESULT</button>
+  </div>
+
+  <!-- Loading Overlay with Key -->
+  <div id="loadingOverlay">
+    <div class="loading-bar-container">
+      <div id="loadingBarInner"></div>
+      <img id="loadingKey" src="Key.png" alt="Golden Key" decoding="async"> <!-- Changed to local path -->
+    </div>
+    <div id="loadingText">Unlocking the Garden's Secret<span class="dot-wave">.</span><span class="dot-wave">.</span><span class="dot-wave">...</span></div>
+  </div>
+
+  <!-- Download Options Modal -->
+  <div id="downloadOptionsModal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="close-modal-btn" id="downloadOptionsModalCloseBtn">&times;</button> <!-- New close button -->
+      <h3>Choose Download Mode</h3>
+      <p>Select whether you would like to download your result in light or dark mode.</p>
+      <div class="modal-buttons">
+        <button id="downloadLightModeBtn">DOWNLOAD IN LIGHT MODE</button>
+        <button id="downloadDarkModeBtn">DOWNLOAD IN DARK MODE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instagram Follow Modal -->
+  <div id="instagramFollowModal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="close-modal-btn" id="instagramModalCloseBtn">&times;</button> <!-- Existing close button -->
+      <img src="butterfly.gif" alt="Butterfly" class="modal-butterfly-gif"> <!-- Added butterfly GIF here -->
+      <h3>Grateful you stepped into the garden and found your spirit within!</h3>
+      <div class="divider"></div> <!-- New divider -->
+      <!-- Removed QR code image -->
+      <p class="keep-magic-text">🌼 Keep the Magic Going:</p>
+      <ul class="magic-list">
+        <li>Follow us on Instagram <a href="https://www.instagram.com/uplbcafsfc?igsh=anh3dmUxN3Rzb3hy" target="_blank" rel="noopener noreferrer">@uplbcafsfc</a></li>
+        <li>Join the Tap-In and grow with us</li>
+        <li>Tag us when you post your results — we’d love to see them!</li>
+      </ul>
+      <div class="modal-buttons">
+        <button id="retakeTestBtn" style="display: none;">RETAKE THE TEST</button> <!-- Changed button text and added inline style for initial hiding -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert/Message Box -->
+  <div id="customMessageBox" class="modal-overlay">
+    <div class="modal-content">
+      <p id="messageBoxText"></p>
+      <button id="messageBoxCloseBtn">OK</button>
+    </div>
+  </div>
+
+  <!-- Temporary container for generating individual plant images (kept for potential future use or if user changes mind) -->
+  <!-- This container is no longer used for image generation but the styling is kept for reference -->
+  <div id="tempResultContainer" style="position: absolute; left: -9999px; top: -9999px; width: 700px; padding: 3rem; background: var(--soft-cream); border-radius: 2rem; border: 2px dashed var(--light-gold); text-align: center; box-shadow: 0 12px 35px var(--shadow-color); opacity: 1; visibility: hidden;">
+    <img id="tempResultImage" src="" alt="" loading="lazy" decoding="async" style="max-width: 300px; height: auto; border-radius: 1.2rem; margin: 0 auto 0; display: block; border: none; box-shadow: none;" />
+    <h2 id="tempPlantName" style="font-family: 'Playfair Display', serif; color: var(--primary-gold); font-size: 3rem; margin-top: 0; margin-bottom: 0; letter-spacing: 0.03em;"></h2>
+    <p id="tempScientificName" style="font-style: italic; color: var(--text-light); font-size: 1rem; margin-top: 0.2rem; margin-bottom: 1rem;"></p>
+    <p id="tempCategory" style="font-weight: bold; color: var(--primary-gold); margin-top: 1.5rem; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;"></p>
+    <div class="divider" style="border-top: 1px dashed var(--light-gold); margin: 2rem auto; width: 95%;"></div>
+    <p id="tempDescriptionTitle" style="font-weight: bold; color: var(--primary-gold); margin-top: 1.5rem; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;"></p>
+    <p id="tempDetails" style="font-size: 1.15rem; line-height: 1.8; margin-bottom: 0.8rem; color: var(--text-light); text-align: justify;"></p>
+    <p id="tempQuote" style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--primary-gold); margin-top: 2rem; font-size: 1.25rem; padding: 1rem 1.5rem; background-color: #FFFDE7; border-left: 5px solid var(--light-gold); border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></p>
+  </div>
+
+
+  <script>
+    const originalQuestions = [
+      {
+        q: "What do others usually call you?",
+        options: [
+          { text: "The Mom Friend – Always checking if everyone ate, brought water, and is okay.", plant: "Sweet Potato" },
+          { text: "The Brain – You always know a random fact or have a plan for everything.", plant: "Cauliflower" },
+          { text: "The Hype Machine – You cheer people on like it’s your job.", plant: "Corn" },
+          { text: "The Chill One – You’re just vibing and keeping everyone calm.", plant: "Paragrass" },
+        ]
+      },
+      {
+        q: "What's your go-to meal?",
+        options: [
+          { text: "Anything warm and hearty like sinigang or adobo – comforting and classic", plant: "Sweet Potato" },
+          { text: "Bento box or anything aesthetic and organized – like your vibe", plant: "Cauliflower" },
+          { text: "Fast food combo with fries and extra sauce – because you’re always on the go", plant: "Corn" },
+          { text: "Something refreshing or light like fruit bowls or iced drinks – chill and cool", plant: "Paragrass" },
+        ]
+      },
+      {
+        q: "How do you usually start your day?",
+        options: [
+          { text: "Up early and ready to tackle tasks – checklist, outfit, hydration: check!", plant: "Corn" },
+          { text: "Slowly with music or journaling – easing in with your own rhythm", plant: "Pitaya" },
+          { text: "I hit snooze... a lot – mornings are tough, let’s be real.", plant: "Peanut" },
+          { text: "Scrolling social media or messaging friends – you need your fix.", plant: "Mussaenda" },
+        ]
+      },
+      {
+        q: "When working with a group, you’re the one who...",
+        options: [
+          { text: "Does the outline and double-checks everything – organization king/queen.", plant: "Cauliflower" },
+          { text: "Handles design, visuals, or anything creative – your brain is a Pinterest board.", plant: "Patchouli" },
+          { text: "Presents the output or hypes the team – no fear, just flair.", plant: "Corn" },
+          { text: "Provides snacks, vibes, or emotional support – the soft one.", plant: "Sweet Potato" },
+        ]
+      },
+      {
+        q: "Which place feels most like home to you?",
+        options: [
+          { text: "My room – it’s my sanctuary.", plant: "Peanut" },
+          { text: "Anywhere quiet and surrounded by nature.", plant: "Paragrass" },
+          { text: "A lively café or busy street.", plant: "Cotton" },
+          { text: "Wherever my friends are – even a random sari-sari store.", plant: "Corn" },
+        ]
+      },
+      {
+        q: "Pick a hobby you vibe with most:",
+        options: [
+          { text: "Writing poetry, journaling, or introspection.", plant: "Patchouli" },
+          { text: "Gaming or watching long YouTube videos.", plant: "Peanut" },
+          { text: "Trying new aesthetic drinks or café-hopping.", plant: "Mussaenda" },
+          { text: "Organizing events, clubs, or group hangouts.", plant: "Sugarcane" },
+        ]
+      },
+      {
+        q: "What’s your dream future like?",
+        options: [
+          { text: "Peaceful, slow, and grounded – somewhere calm.", plant: "Paragrass" },
+          { text: "Making an impact, influencing others, maybe even fame.", plant: "Cotton" },
+          { text: "Living sustainably and close to nature.", plant: "Patchouli" },
+          { text: "Changing the world with innovation or leadership.", plant: "Cauliflower" },
+        ]
+      },
+      {
+        q: "Your energy in a 'barkada' group chat:",
+        options: [
+          { text: "Spam memes and make everyone laugh.", plant: "Corn" },
+          { text: "Send deep late-night thoughts or voice notes.", plant: "Patchouli" },
+          { text: "Remind people of deadlines and who’s bringing what.", plant: "Cauliflower" },
+          { text: "React to messages but rarely start conversations.", plant: "Peanut" },
+        ]
+      },
+      {
+        q: "You’re given ₱500 and a free afternoon. What do you do?",
+        options: [
+          { text: "Buy snacks for the group or treat a friend.", plant: "Sweet Potato" },
+          { text: "Thrift or look for unique finds.", plant: "Mussaenda" },
+          { text: "Spend it on milk tea, halo-halo, or anything cold.", plant: "Pitaya" },
+          { text: "Save or invest it – practical first.", plant: "Sugarcane" },
+        ]
+      },
+      {
+        q: "Choose a vibe aesthetic:",
+        options: [
+          { text: "Soft, earthy tones, candles, lo-fi music.", plant: "Paragrass" },
+          { text: "Retro Y2K, maximalist, experimental.", plant: "Pitaya" },
+          { text: "Clean girl / minimalist / neutral feeds.", plant: "Cauliflower" },
+          { text: "Bright, chaotic, anything goes.", plant: "Cotton" },
+        ]
+      },
+      {
+        q: "You’re feeling overwhelmed. What helps most?",
+        options: [
+          { text: "Cuddling a pet or crying it out alone.", plant: "Sweet Potato" },
+          { text: "Loud music and dancing like no one’s watching.", plant: "Corn" },
+          { text: "Writing down what I feel or venting to someone.", plant: "Patchouli" },
+          { text: "Escaping through a game, video, or nap.", plant: "Peanut" },
+        ]
+      },
+      {
+        q: "Pick the best quote that speaks to you:",
+        options: [
+          { text: "“Grow slow, bloom loud.” – you do not rush your process.", plant: "Mussaenda" },
+          { text: "“I’m built for the sun.” – you are born to shine.", plant: "Sugarcane" },
+          { text: "“Bend, don’t break.” – you are gentle but strong.", plant: "Paragrass" },
+          { text: "“If no one claps, clap for yourself.” – main character energy.", plant: "Cotton" },
+        ]
+      }
+    ];
+
+    const plantDescriptions = {
+      Corn: {
+        scientific: "Zea mays",
+        category: "Cereal",
+        descriptionTitle: "The Adaptive Visionary",
+        details: "Corn is grown nearly everywhere—from lowlands to uplands—just like you thrive in any environment. You are resilient, resourceful, and adaptable, able to take the lead in complex situations. Corn supports countless industries, which mirrors your versatility—you are the kind of person who wears many hats and performs them all well. You value progress and nourishment, not just for yourself but for those around you.",
+        quote: "Like corn, you are deeply rooted in purpose, yet always reaching higher.",
+        image: "Corn.png" /* This image is for display on the result page */
+      },
+      "Sweet Potato": {
+        scientific: "Ipomoea batatas",
+        category: "Root Crop",
+        descriptionTitle: "The Grounded Caregiver",
+        details: "Sweet potato grows beneath the surface, storing energy and nutrients in silence. You are humble, nurturing, and self-sustaining—people rely on you for comfort and strength. You may not seek attention, but your quiet presence makes a lasting impact. Just as 'kamote' can regrow from even small cuttings, you are the embodiment of resilience and rebirth.",
+        quote: "You give from the roots—steady, soft, and nourishing to the soul.",
+        image: "Sweet_Potato.png" /* This image is for display on the result page */
+      },
+      Mussaenda: {
+        scientific: "Mussaenda philippica",
+        category: "Ornamental",
+        descriptionTitle: "The Dazzling Spirit",
+        details: "Mussaenda dazzles with its colorful, petal-like bracts. You are expressive, artistic, and emotionally attuned. You uplift your surroundings simply by being present. Like this ornamental plant, often used in public gardens, your charm draws people in—but beneath the beauty is a deep sense of sensitivity and meaning. You remind people to find wonder in the everyday.",
+        quote: "Like Mussaenda, you beautify effortlessly. You are presence made petals.",
+        image: "Mussaenda.png" /* This image is for display on the result page */
+      },
+      Peanut: {
+        scientific: "Arachis hypogaea",
+        category: "Legume",
+        descriptionTitle: "The Steady Steward",
+        details: "Peanuts grow underground while quietly enriching the soil through nitrogen fixation. You are modest yet essential, the type who supports others from behind the scenes. You are practical, grounded, and naturally beneficial to your community. Like peanuts used in diverse Filipino dishes, your strength lies in fitting in wherever needed, yet always improving the situation.",
+        quote: "You may grow low, but you lift others high.",
+        image: "Peanut.png" /* This image is for display on the result page */
+      },
+      Pitaya: {
+        scientific: "Selenicereus undatus",
+        category: "Pomological Crop (Fruit)",
+        descriptionTitle: "The Bold Trailblazer",
+        details: "Pitaya thrives under full sun and blooms at night—proof that beauty and productivity do not follow conventional rules. You are original, unconventional, and vibrant, often standing out in a crowd. Like the plant that clings to trellises, you climb high through effort and ingenuity. You are full of surprises, both inside and out.",
+        quote: "You do not just grow—you glow after dark.",
+        image: "Pitaya.png" /* This image is for display on the result page */
+      },
+      Patchouli: {
+        scientific: "Pogostemon cablin",
+        category: "Plantation Crop",
+        descriptionTitle: "The Scent of Serenity",
+        details: "Patchouli is valued for its calming fragrance and is used in oils and perfumes. You are soothing, wise, and reflective. You prefer deep conversations over small talk, and solitude recharges you. You may not speak often, but when you do, people listen. Like its essential oil, a little of your presence leaves a lasting impression.",
+        quote: "Still waters run deep—and you are the calm before and after every storm.",
+        image: "Patchouli.png" /* This image is for display on the result page */
+      },
+      Cauliflower: {
+        scientific: "Brassica oleracea var. botrytis",
+        category: "Olericultural Crop (Vegetable)",
+        descriptionTitle: "The Quiet Strategist",
+        details: "Cauliflower thrives in cool environments and requires precise timing. You are analytical, composed, and deliberate—you plan things through and do not act rashly. Just as cauliflower’s curds are tightly packed, your thoughts are structured and organized. You are proof that brilliance often grows in the background.",
+        quote: "Not all who are quiet lack depth—some are just preparing to flourish.",
+        image: "Cauliflower.png" /* This image is for display on the result page */
+      },
+      Sugarcane: {
+        scientific: "Saccharum officinarum",
+        category: "Industrial Crop",
+        descriptionTitle: "The Tireless Contributor",
+        details: "Sugarcane grows tall and dense, producing fuel, sugar, and even paper. You are a productive powerhouse, someone who can keep giving without burning out. People admire your endurance, generosity, and reliability. You are the type who can sweeten lives even during hard harvest seasons.",
+        quote: "Even under the heat, you keep growing—and giving.",
+        image: "Sugarcane.png" /* This image is for display on the result page */
+      },
+      Cotton: {
+        scientific: "Gossypium hirsutum",
+        category: "Fiber Crop",
+        descriptionTitle: "The Gentle Resilient",
+        details: "Cotton is soft but labor-intensive to grow. You are gentle, patient, and emotionally intelligent. Like cotton, you are flexible yet strong when stretched. People find comfort in your presence, and your strength often shows in times of hardship. You make warmth tangible, just by being you.",
+        quote: "You are proof that softness and strength can grow from the same stem.",
+        image: "Cotton.png" /* This image is for display on the result page */
+      },
+      Paragrass: {
+        scientific: "Urochloa mutica",
+        category: "Grass Forage",
+        descriptionTitle: "The Groundcover Guardian",
+        details: "Paragrass spreads rapidly, controlling erosion and providing forage. You are supportive, adaptable, and community-driven. While you may not seek center stage, you hold people together. Like a true ecosystem enabler, your presence stabilizes and uplifts. You don’t grow for praise—you grow so others can thrive.",
+        quote: "You’re the calm beneath the chaos.",
+        image: "Paragrass.png" /* This image is for display on the result page */
+      }
+    };
+
+    let shuffledQuestions = [];
+    let currentQuestionIndex = 0;
+    const userAnswers = {}; // Stores selected plant for each question index
+
+    const questionsContainer = document.getElementById('questionsContainer');
+    const progressBar = document.getElementById('progressBar');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    // Removed submitQuizBtn as it's no longer a separate button
+
+    const quizForm = document.getElementById('quizForm');
+    const resultDiv = document.getElementById('result');
+    const actionButtonsContainer = document.getElementById('actionButtons'); // Get the new container for action buttons
+
+    // New splash screen elements
+    const splashScreen = document.getElementById('splashScreen');
+    const splashLogo = document.getElementById('splashLogo'); // Get splash logo element
+    const takeTestBtn = document.getElementById('takeTestBtn');
+    const headerContent = document.querySelector('.header-content');
+    const headerLogo = document.querySelector('.header-logo'); // The actual header logo element
+
+    // Loading overlay elements
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loadingBarInner = document.getElementById('loadingBarInner');
+    const loadingKey = document.getElementById('loadingKey');
+
+    // Moved these declarations to a higher scope so they are accessible globally
+    const quizContainer = document.querySelector('.quiz-container');
+    const actionButtonsContainerElem = document.getElementById('actionButtons');
+
+    // Modal elements
+    const downloadOptionsModal = document.getElementById('downloadOptionsModal');
+    const downloadLightModeBtn = document.getElementById('downloadLightModeBtn');
+    const downloadDarkModeBtn = document.getElementById('downloadDarkModeBtn');
+    const downloadOptionsModalCloseBtn = document.getElementById('downloadOptionsModalCloseBtn'); // New close button for download modal
+
+    // Instagram Follow Modal elements
+    const instagramFollowModal = document.getElementById('instagramFollowModal');
+    const instagramModalCloseBtn = document.getElementById('instagramModalCloseBtn'); // Get the new close button
+    const retakeTestBtn = document.getElementById('retakeTestBtn'); // Renamed from instagramBringMeThereBtn
+
+    // Custom Message Box elements
+    const customMessageBox = document.getElementById('customMessageBox');
+    const messageBoxText = document.getElementById('messageBoxText');
+    const messageBoxCloseBtn = document.getElementById('messageBoxCloseBtn');
+
+
+    // Function to show custom message box
+    function showMessageBox(message) {
+      messageBoxText.textContent = message;
+      customMessageBox.classList.add('active');
+    }
+
+    // Function to hide custom message box
+    function hideMessageBox() {
+      customMessageBox.classList.remove('active');
+    }
+
+
+    // Function to show Instagram follow modal (now also handles retake button visibility)
+    function showInstagramFollowModal() {
+      instagramFollowModal.classList.add('active');
+      // Hide the retake button initially and then show it after a delay
+      retakeTestBtn.style.opacity = '0';
+      retakeTestBtn.style.display = 'block'; // Ensure it's block so opacity transition works
+      setTimeout(() => {
+        retakeTestBtn.style.opacity = '1';
+      }, 5000); // 5-second delay
+    }
+
+    // Function to hide Instagram follow modal
+    function hideInstagramFollowModal() {
+      instagramFollowModal.classList.remove('active');
+      retakeTestBtn.style.display = 'none'; // Hide the button when modal is closed
+    }
+
+
+    // Function to shuffle an array
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+      }
+      return array;
+    }
+
+    // Function to initialize the quiz
+    function initializeQuiz() {
+      shuffledQuestions = shuffleArray([...originalQuestions]); // Shuffle a copy of original questions
+      questionsContainer.innerHTML = ''; // Clear existing questions
+
+      shuffledQuestions.forEach((question, index) => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.setAttribute('data-question-index', index); // Store original index for answer tracking
+        div.innerHTML = `
+          <h3>${index + 1}. ${question.q}</h3>
+          <div class="options">
+            ${question.options.map((opt, i) => `
+              <input type="radio" name="q${index}" id="q${index}opt${i}" value="${opt.plant}">
+              <label for="q${index}opt${i}">${opt.text}</label>
+            `).join('')}
+          </div>
+        `;
+        questionsContainer.appendChild(div);
+
+        // Add event listener for radio button changes
+        div.querySelectorAll('input[type="radio"]').forEach(radio => {
+          radio.addEventListener('change', (event) => {
+            userAnswers[index] = event.target.value; // Store the chosen plant for this question
+            updateNavigationButtons(); // Update button state after an answer is selected
+
+            // Automatically move to the next question if an option is selected and it is not the last question
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                nextBtn.click(); // Programmatically click the next button
+            }
+          });
+        });
+      });
+
+      currentQuestionIndex = 0;
+      displayQuestion(currentQuestionIndex);
+      updateProgressBar();
+      updateNavigationButtons();
+    }
+
+    // Function to display a specific question
+    function displayQuestion(index) {
+      const questions = document.querySelectorAll('.question');
+      questions.forEach((q, i) => {
+        q.classList.remove('active');
+        if (i === index) {
+          q.classList.add('active');
+          // Restore selected radio button if already answered
+          const selectedPlant = userAnswers[index];
+          if (selectedPlant) {
+            const radio = q.querySelector(`input[value="${selectedPlant}"]`);
+            if (radio) radio.checked = true;
+          }
+        }
+      });
+      updateProgressBar();
+      updateNavigationButtons();
+    }
+
+    // Function to update the progress bar
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    // Function to update navigation button states
+    function updateNavigationButtons() {
+      prevBtn.disabled = currentQuestionIndex === 0;
+
+      // Next button is disabled if no answer is selected for the current question
+      nextBtn.disabled = !userAnswers.hasOwnProperty(currentQuestionIndex);
+
+      // The text content for next button remains an arrow, even on the last question
+      nextBtn.innerHTML = '&#x2192;';
+    }
+
+    // Event listeners for navigation
+    prevBtn.addEventListener('click', () => {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        displayQuestion(currentQuestionIndex);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentQuestionIndex < shuffledQuestions.length - 1) {
+        // Only proceed if an answer is selected for the current question
+        if (userAnswers.hasOwnProperty(currentQuestionIndex)) {
+            currentQuestionIndex++;
+            displayQuestion(currentQuestionIndex);
+        }
+      } else {
+        // This is the last question, submit the quiz
+        quizForm.dispatchEvent(new Event('submit'));
+      }
+    });
+
+    // Function to directly download a pre-existing image file
+    async function downloadResultImage(topPlantName, buttonElement, mode) {
+      // Show loading spinner and disable button
+      buttonElement.innerHTML = 'Downloading <span class="spinner"></span>';
+      buttonElement.classList.add('loading-button');
+      buttonElement.disabled = true;
+
+      // Clean the plant name for filenames (e.g., "Sweet Potato" -> "Sweet_Potato")
+      const cleanedPlantName = topPlantName.replace(/\s/g, '_');
+
+      let imagePath;
+      let downloadFileName;
+
+      if (mode === 'light') {
+        imagePath = `L_${cleanedPlantName}.png`;
+        downloadFileName = `CAFSSecretGarden_${cleanedPlantName}_LMode.png`;
+      } else if (mode === 'dark') {
+        imagePath = `D_${cleanedPlantName}.png`;
+        downloadFileName = `CAFSSecretGarden_${cleanedPlantName}_DMode.png`;
+      } else {
+        // Fallback or error if mode is not recognized
+        console.error("Invalid download mode specified.");
+        showMessageBox("An error occurred during download. Please try again.");
+        return; // Exit function if mode is invalid
+      }
+
+      try {
+        const link = document.createElement('a');
+        link.href = imagePath; // Set href directly to the image file path
+        link.download = downloadFileName; // This will trigger a direct download
+        document.body.appendChild(link); // Append to body to ensure it's in the DOM for click
+        link.click(); // Programmatically click the link to trigger download
+        document.body.removeChild(link); // Clean up the element
+
+      } catch (error) {
+        console.error('Error downloading image:', error);
+        showMessageBox('Failed to download the result image. Please try again.');
+      } finally {
+        // Reset button state after download or error
+        buttonElement.innerHTML = (mode === 'dark' ? 'DOWNLOAD IN DARK MODE' : 'DOWNLOAD IN LIGHT MODE');
+        buttonElement.classList.remove('loading-button');
+        buttonElement.disabled = false;
+        hideDownloadOptionsModal(); // Hide the modal after download attempt
+        showInstagramFollowModal(); // Show the Instagram follow-up modal
+      }
+    }
+
+    // Function to show download options modal
+    function showDownloadOptionsModal() {
+      downloadOptionsModal.classList.add('active');
+    }
+
+    // Function to hide download options modal
+    function hideDownloadOptionsModal() {
+      downloadOptionsModal.classList.remove('active');
+    }
+
+
+    // Event listener for form submission
+    quizForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Final check for the last question
+      if (Object.keys(userAnswers).length !== shuffledQuestions.length) { // Check if all questions are answered
+        showMessageBox("Please answer all questions before finding out your result!");
+        return;
+      }
+
+      const scores = {};
+      for (const index in userAnswers) {
+        const plant = userAnswers[index];
+        scores[plant] = (scores[plant] || 0) + 1;
+      }
+
+      let topPlant = null;
+      let maxScore = -1; // Initialize with -1 to ensure any score is higher
+
+      // Iterate through the scores to find the highest, prioritizing the first encountered in case of a tie
+      for (const plant in scores) {
+        if (scores[plant] > maxScore) {
+          maxScore = scores[plant];
+          topPlant = plant;
+        }
+      }
+
+      // Fallback if no plant is selected (should not happen with validation)
+      if (!topPlant && Object.keys(scores).length > 0) {
+          topPlant = Object.keys(scores)[0]; // Pick the first one if all scores are zero or tied at zero
+      } else if (!topPlant) {
+          topPlant = "Paragrass"; // Default to a neutral plant if somehow no answer is recorded
+      }
+
+      // Hide the quiz container
+      quizContainer.style.display = 'none';
+
+      // Show loading overlay and start animation
+      loadingOverlay.classList.add('active');
+      loadingBarInner.style.width = '100%'; // Start loading bar animation
+      // Reset loadingKey animation to ensure it starts from the beginning each time
+      loadingKey.style.animation = 'none';
+      void loadingKey.offsetWidth; // Trigger reflow to restart animation
+      loadingKey.style.animation = 'flyAcross 2.5s linear forwards'; /* Only horizontal movement */
+
+
+      // After loading animation, display result and action buttons
+      setTimeout(() => {
+        resultDiv.style.display = 'block';
+        actionButtonsContainer.style.display = 'flex'; // Show the action buttons container
+        loadingOverlay.classList.remove('active'); // Hide loading overlay
+        loadingBarInner.style.width = '0%'; // Reset loading bar for next time
+        loadingKey.style.animation = 'none'; // Stop loadingKey animation
+      }, 2500); // Match this duration to the loading bar animation duration (2.5s)
+
+      const resultPlant = plantDescriptions[topPlant];
+
+      resultDiv.innerHTML = `
+        <img id="resultImage" src="${resultPlant.image}" alt="${topPlant}" onerror="this.onerror=null;this.src='https://placehold.co/200x200/cccccc/333333?text=Image+Not+Found';" loading="lazy" decoding="async" />
+        <h2>${topPlant}</h2>
+        <p class="scientific-name"><em>${resultPlant.scientific}</em></p>
+        <p class="category">Category: ${resultPlant.category}</p>
+        <div class="divider"></div>
+        <p class="description-title">${resultPlant.descriptionTitle}</p>
+        <p class="details">${resultPlant.details}</p>
+        <p class="quote">"${resultPlant.quote}"</p>
+      `;
+    });
+
+    // Initial state: hide quiz, action buttons, and header content
+    quizContainer.style.display = 'none';
+    actionButtonsContainerElem.style.display = 'none';
+    resultDiv.style.display = 'none';
+    headerContent.style.opacity = '0'; // Hide header content initially
+    headerContent.style.display = 'none'; // Ensure display is none initially
+
+
+    // Event listener for the splash screen button
+    takeTestBtn.addEventListener('click', () => {
+        // Fade out the splash screen and its logo
+        splashScreen.classList.add('hidden');
+
+        // Wait for the splash screen transition to complete
+        splashScreen.addEventListener('transitionend', function handler() {
+            splashScreen.style.display = 'none'; // Fully hide splash screen after transition
+            splashScreen.removeEventListener('transitionend', handler);
+
+            // Show quiz container and header content
+            quizContainer.style.display = 'block';
+            headerContent.style.display = 'flex';
+
+            // Trigger fade-in for quiz container and header content
+            // A tiny delay might be needed for some browsers to register the display change before starting opacity transition
+            setTimeout(() => {
+                quizContainer.style.opacity = '1';
+                headerContent.style.opacity = '1';
+                headerLogo.style.opacity = '1'; // Ensure header logo fades in
+            }, 50); // Small delay to ensure display property takes effect before opacity transition
+        }, { once: true });
+    });
+
+    // Initialize the quiz questions when the page loads, but quiz content is hidden by splash screen
+    window.onload = () => {
+        initializeQuiz();
+        // Set initial arrow for previous button, next button is already set in HTML
+        prevBtn.innerHTML = '&#x2190;';
+        // Event listeners for modals
+        messageBoxCloseBtn.addEventListener('click', hideMessageBox);
+        instagramModalCloseBtn.addEventListener('click', hideInstagramFollowModal);
+        downloadOptionsModalCloseBtn.addEventListener('click', hideDownloadOptionsModal); // Attach listener for new close button
+        retakeTestBtn.addEventListener('click', () => { location.reload(); }); // Add event listener for retake button
+    };
+
+    // Event listener for the main DOWNLOAD PNG RESULT button (opens modal)
+    document.getElementById('downloadResultBtn').addEventListener('click', showDownloadOptionsModal);
+
+    // Event listeners for modal buttons
+    downloadLightModeBtn.addEventListener('click', (event) => {
+      const topPlant = resultDiv.querySelector('h2').textContent; // Get crop name
+      downloadResultImage(topPlant, event.currentTarget, 'light'); // Pass crop name and mode
+    });
+
+    downloadDarkModeBtn.addEventListener('click', (event) => {
+      const topPlant = resultDiv.querySelector('h2').textContent; // Get crop name
+      downloadResultImage(topPlant, event.currentTarget, 'dark'); // Pass crop name and mode
+    });
+  </script>
+</body>
+</html>

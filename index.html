@@ -451,6 +451,17 @@
       transform: translateY(0) !important;
       box-shadow: none !important;
     }
+    /* New rule: Make disabled buttons gray */
+    .modal-buttons button:disabled,
+    #actionButtons button:disabled {
+        background-color: #cccccc !important; /* Gray background */
+        color: #666666 !important; /* Darker text for contrast */
+        cursor: not-allowed !important;
+        opacity: 0.8; /* Slightly less opaque than loading for clarity */
+        box-shadow: none !important;
+        transform: translateY(0) !important;
+    }
+
 
     .spinner {
       border: 3px solid rgba(255, 255, 255, 0.3);
@@ -762,9 +773,9 @@
 
     #instagramFollowModal .modal-buttons {
         display: flex;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        flex-direction: column; /* Stack buttons vertically */
+        align-items: center; /* Center buttons */
+        gap: 0.8rem; /* Space between stacked buttons */
         margin-top: 2rem; /* Adjusted margin for the buttons */
     }
 
@@ -1053,8 +1064,9 @@
         <li>Join the Tap-In and grow with us</li>
         <li>Tag us when you post your results — we’d love to see them!</li>
       </ul>
-      <div class="modal-buttons">
-        <button id="retakeTestBtn" style="display: none;">RETAKE THE TEST</button> <!-- Changed button text and added inline style for initial hiding -->
+      <div class="modal-buttons" id="instagramModalButtons">
+        <!-- Conditional download button will be inserted here by JS -->
+        <button id="retakeTestBtn" style="display: none; opacity: 0;">RETAKE THE TEST</button> <!-- Changed button text and added inline style for initial hiding -->
       </div>
     </div>
   </div>
@@ -1279,6 +1291,8 @@
     let shuffledQuestions = [];
     let currentQuestionIndex = 0;
     const userAnswers = {}; // Stores selected plant for each question index
+    let lastDownloadMode = null; // To store the last mode downloaded (light/dark)
+    let topPlantResult = null; // To store the top plant name for the thank you modal
 
     const questionsContainer = document.getElementById('questionsContainer');
     const progressBar = document.getElementById('progressBar');
@@ -1315,6 +1329,7 @@
     // Instagram Follow Modal elements
     const instagramFollowModal = document.getElementById('instagramFollowModal');
     const instagramModalCloseBtn = document.getElementById('instagramModalCloseBtn'); // Get the new close button
+    const instagramModalButtons = document.getElementById('instagramModalButtons'); // Get the buttons container in the modal
     const retakeTestBtn = document.getElementById('retakeTestBtn'); // Renamed from instagramBringMeThereBtn
 
     // Custom Message Box elements
@@ -1338,18 +1353,63 @@
     // Function to show Instagram follow modal (now also handles retake button visibility)
     function showInstagramFollowModal() {
       instagramFollowModal.classList.add('active');
-      // Hide the retake button initially and then show it after a delay
+
+      // Remove any previously added alternate download button
+      const existingAlternateBtn = document.getElementById('downloadAlternateModeBtn');
+      if (existingAlternateBtn) {
+        existingAlternateBtn.remove();
+      }
+
+      // Dynamically create and add the alternate download button
+      if (lastDownloadMode && topPlantResult) {
+        const alternateMode = lastDownloadMode === 'light' ? 'dark' : 'light';
+        const alternateButtonText = `DOWNLOAD IN ${alternateMode.toUpperCase()} MODE`;
+
+        const downloadAlternateModeBtn = document.createElement('button');
+        downloadAlternateModeBtn.id = 'downloadAlternateModeBtn';
+        downloadAlternateModeBtn.textContent = alternateButtonText;
+        downloadAlternateModeBtn.style.display = 'none'; // Initially hidden
+        downloadAlternateModeBtn.style.opacity = '0'; // Initially transparent
+
+        // This is the crucial part: the callback for the alternate button
+        const alternateDownloadCallback = () => {
+            // This function will be called AFTER the alternate download completes
+            downloadAlternateModeBtn.innerHTML = alternateButtonText; // Reset text
+            downloadAlternateModeBtn.classList.remove('loading-button');
+            downloadAlternateModeBtn.disabled = true; // Permanently disable this specific button
+        };
+
+        downloadAlternateModeBtn.addEventListener('click', (event) => {
+            // Pass the callback to downloadResultImage
+            downloadResultImage(topPlantResult, event.currentTarget, alternateMode, alternateDownloadCallback);
+        });
+
+        // Insert the new button before the retake button
+        instagramModalButtons.insertBefore(downloadAlternateModeBtn, retakeTestBtn);
+
+        // Show the alternate download button after 3 seconds
+        setTimeout(() => {
+          downloadAlternateModeBtn.style.opacity = '1';
+          downloadAlternateModeBtn.style.display = 'block'; // Ensure it's block for transition
+        }, 3000); // Changed from 5000 to 3000
+      }
+
+      // Show the retake button after 3 seconds
       retakeTestBtn.style.opacity = '0';
       retakeTestBtn.style.display = 'block'; // Ensure it's block so opacity transition works
       setTimeout(() => {
         retakeTestBtn.style.opacity = '1';
-      }, 5000); // 5-second delay
+      }, 3000); // Changed from 5000 to 3000
     }
 
     // Function to hide Instagram follow modal
     function hideInstagramFollowModal() {
       instagramFollowModal.classList.remove('active');
       retakeTestBtn.style.display = 'none'; // Hide the button when modal is closed
+      const existingAlternateBtn = document.getElementById('downloadAlternateModeBtn');
+      if (existingAlternateBtn) {
+        existingAlternateBtn.remove(); // Remove the alternate download button when modal closes
+      }
     }
 
 
@@ -1368,13 +1428,16 @@
       questionsContainer.innerHTML = ''; // Clear existing questions
 
       shuffledQuestions.forEach((question, index) => {
+        // Shuffle the options for each question
+        const shuffledOptions = shuffleArray([...question.options]);
+
         const div = document.createElement('div');
         div.className = 'question';
         div.setAttribute('data-question-index', index); // Store original index for answer tracking
         div.innerHTML = `
           <h3>${index + 1}. ${question.q}</h3>
           <div class="options">
-            ${question.options.map((opt, i) => `
+            ${shuffledOptions.map((opt, i) => `
               <input type="radio" name="q${index}" id="q${index}opt${i}" value="${opt.plant}">
               <label for="q${index}opt${i}">${opt.text}</label>
             `).join('')}
@@ -1460,7 +1523,10 @@
     });
 
     // Function to directly download a pre-existing image file
-    async function downloadResultImage(topPlantName, buttonElement, mode) {
+    async function downloadResultImage(topPlantName, buttonElement, mode, callbackAfterDownload = null) {
+      // Set the last downloaded mode
+      lastDownloadMode = mode;
+
       // Show loading spinner and disable button
       buttonElement.innerHTML = 'Downloading <span class="spinner"></span>';
       buttonElement.classList.add('loading-button');
@@ -1497,12 +1563,18 @@
         console.error('Error downloading image:', error);
         showMessageBox('Failed to download the result image. Please try again.');
       } finally {
-        // Reset button state after download or error
+        // Reset button state
         buttonElement.innerHTML = (mode === 'dark' ? 'DOWNLOAD IN DARK MODE' : 'DOWNLOAD IN LIGHT MODE');
         buttonElement.classList.remove('loading-button');
-        buttonElement.disabled = false;
-        hideDownloadOptionsModal(); // Hide the modal after download attempt
-        showInstagramFollowModal(); // Show the Instagram follow-up modal
+        buttonElement.disabled = true; // Always disable the button that was just pressed
+
+        hideDownloadOptionsModal(); // Always hide the initial download options modal
+
+        if (callbackAfterDownload) {
+            callbackAfterDownload(); // Execute specific callback for alternate button
+        } else {
+            showInstagramFollowModal(); // Only show the thank you modal for initial downloads
+        }
       }
     }
 
@@ -1550,6 +1622,7 @@
       } else if (!topPlant) {
           topPlant = "Paragrass"; // Default to a neutral plant if somehow no answer is recorded
       }
+      topPlantResult = topPlant; // Store the top plant globally
 
       // Hide the quiz container
       quizContainer.style.display = 'none';

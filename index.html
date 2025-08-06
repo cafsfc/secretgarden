@@ -5,36 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CAFS' Secret Garden - Crop Personality Test</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght%40700&family=Lora:wght%40400%3B700&display=swap" rel="stylesheet">
+  <!-- html2canvas is no longer used for download, but kept if needed for other capture features -->
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     :root {
-      --primary-gold: #B8860B; 
-      --light-gold: #DAA520; 
-      --soft-cream: #FFF8E1;
-      --warm-white: #FCF8E8;
-      --accent-gold: #FFD700;
-      --text-dark: #222;
-      --text-light: #444;
+      --primary-gold: #B8860B; /* DarkGoldenrod - a rich, deep gold */
+      --light-gold: #DAA520; /* Goldenrod - a vibrant gold */
+      --soft-cream: #FFF8E1; /* A very light, warm cream */
+      --warm-white: #FCF8E8; /* Slightly whiter than soft-cream */
+      --accent-gold: #FFD700; /* Gold - for subtle highlights */
+      --text-dark: #222; /* Made darker for better readability */
+      --text-light: #444; /* Made darker for better readability */
       --shadow-color: rgba(0, 0, 0, 0.15);
       --border-color: rgba(0,0,0,0.08);
     }
 
     html, body {
-      box-sizing: border-box;
+      box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
     }
 
     body {
       margin: 0;
       font-family: 'Lora', serif;
-      background-image: url('Background.png');
+      /* Updated background to use the image */
+      background-image: url('Background.png'); /* Changed to local path */
       background-size: cover;
       background-position: center;
-      background-attachment: fixed;
+      background-attachment: fixed; /* Ensures background stays fixed during scroll */
       color: var(--text-dark);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px;
+      padding: 10px; /* Reduced padding */
       min-height: 100vh;
       position: relative;
       overflow-x: hidden;
@@ -44,41 +46,45 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 0;
-        opacity: 0;
-        transition: opacity 0.7s ease-in;
+        margin-bottom: 0; /* Removed bottom margin to reduce space */
+        opacity: 0; /* Initially hidden for fade-in effect */
+        transition: opacity 0.7s ease-in; /* Transition for fade-in */
     }
     .header-content.visible {
         opacity: 1;
     }
 
+    /* The header logo, separate from splash logo */
     .header-logo {
-        width: clamp(180px, 40vw, 350px);
+        width: clamp(180px, 40vw, 350px); /* Increased min/max width for larger logo */
         height: auto;
-        margin-bottom: 0;
-        filter: drop-shadow(0 0 4px white) drop-shadow(0 0 8px white) drop-shadow(0 0 12px white);
-        opacity: 0;
-        transition: opacity 0.7s ease-in;
+        margin-bottom: 0; /* No bottom margin here, spacing is on header-content */
+        /* Subtle white glow for the logo */
+        filter: drop-shadow(0 0 4px white) drop-shadow(0 0 8px white) drop-shadow(0 0 12px white); /* Adjusted glow for more visibility */
+        opacity: 0; /* Initially hidden, will fade in after splash screen fades out */
+        transition: opacity 0.7s ease-in; /* Fade in with header-content */
     }
 
+    /* Butterfly GIF styling for the modal */
     .modal-butterfly-gif {
-        width: clamp(80px, 15vw, 150px);
+        width: clamp(80px, 15vw, 150px); /* Responsive size for butterfly */
         height: auto;
-        margin-bottom: 10px;
-        filter: drop-shadow(0 0 3px rgba(255,255,255,0.7));
+        margin-bottom: 10px; /* Space between butterfly and heading */
+        filter: drop-shadow(0 0 3px rgba(255,255,255,0.7)); /* Subtle glow for butterfly */
     }
 
 
     h1 {
       font-family: 'Playfair Display', serif;
       text-align: center;
-      color: var(--primary-gold);
-      font-size: clamp(2.2rem, 5vw, 3.2rem);
-      text-shadow: 0 0 5px white, 0 0 10px white, 0 0 15px white;
+      color: var(--primary-gold); /* Gold text */
+      font-size: clamp(2.2rem, 5vw, 3.2rem); /* Responsive font size */
+      text-shadow: 0 0 5px white, 0 0 10px white, 0 0 15px white; /* White glow */
       letter-spacing: 0.05em;
-      margin: 0;
+      margin: 0; /* Remove default margin as it's in a container */
     }
 
+    /* Splash Screen Styling */
     #splashScreen {
       position: fixed;
       top: 0;
@@ -89,7 +95,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background-color: white;
+      background-color: white; /* Start with white background */
       z-index: 2000;
       opacity: 1;
       visibility: visible;
@@ -102,12 +108,12 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url('Background.png');
+        background-image: url('Background.png'); /* Changed to local path */
         background-size: cover;
         background-position: center;
-        opacity: 0;
-        animation: bgFadeIn 1.5s ease-out forwards;
-        z-index: -1;
+        opacity: 0; /* Start invisible */
+        animation: bgFadeIn 1.5s ease-out forwards; /* Fade in background image */
+        z-index: -1; /* Behind content */
     }
 
     @keyframes bgFadeIn {
@@ -119,8 +125,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        opacity: 0;
-        animation: contentFadeIn 0.5s ease-out forwards 1.5s;
+        opacity: 0; /* Initially hidden, will fade in after background */
+        animation: contentFadeIn 0.5s ease-out forwards 1.5s; /* Start after background fades */
         padding: clamp(2rem, 5vw, 3rem);
         border-radius: 1.5rem;
         max-width: 600px;
@@ -136,10 +142,11 @@
     #splashLogo {
       width: clamp(250px, 55vw, 450px);
       height: auto;
-      margin-bottom: 20px;
-      opacity: 0;
-      transform: scale(2);
-      animation: logoFadeZoomOut 2s ease-out forwards 2s;
+      margin-bottom: 20px; /* Space between logo and button */
+      opacity: 0; /* Start hidden */
+      transform: scale(2); /* Start zoomed in */
+      animation: logoFadeZoomOut 2s ease-out forwards 2s; /* Start after contentFadeIn */
+      /* Subtle white glow for the logo */
       filter: drop-shadow(0 0 2px white) drop-shadow(0 0 4px white) drop-shadow(0 0 6px white); /* Corrected property name */
     }
 
@@ -147,7 +154,10 @@
       from { opacity: 0; transform: scale(2); }
       to { opacity: 1; transform: scale(1); }
     }
-    
+
+    /* No specific animation for splash logo on exit, it will fade with splashScreen.hidden */
+
+
     #takeTestBtn {
       background-color: var(--primary-gold);
       color: white;
@@ -161,12 +171,12 @@
       letter-spacing: 0.08em;
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
       transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-      opacity: 0;
-      animation: buttonFadeIn 0.5s ease-out forwards 1.8s;
-      display: flex;
+      opacity: 0; /* Start hidden */
+      animation: buttonFadeIn 0.5s ease-out forwards 1.8s; /* Button appears by 2.3s */
+      display: flex; /* To center text */
       align-items: center;
       justify-content: center;
-      white-space: nowrap;
+      white-space: nowrap; /* Ensure text fits on one line */
     }
 
     #takeTestBtn:hover {
@@ -180,7 +190,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Fade out ng splash screen */
+    /* Class to hide splash screen */
     #splashScreen.hidden {
       opacity: 0;
       visibility: hidden;
@@ -189,17 +199,17 @@
 
     .quiz-container {
       background: var(--soft-cream);
-      border-radius: 1.5rem;
-      padding: clamp(1.5rem, 5vw, 2.5rem);
-      max-width: 750px;
-      width: 95%;
-      box-shadow: 0 10px 30px var(--shadow-color);
+      border-radius: 1.5rem; /* Larger border-radius for elegance */
+      padding: clamp(1.5rem, 5vw, 2.5rem); /* Responsive padding */
+      max-width: 750px; /* Slightly wider */
+      width: 95%; /* Responsive width */
+      box-shadow: 0 10px 30px var(--shadow-color); /* More pronounced shadow */
       border: 1px solid var(--border-color);
       z-index: 1;
-      position: relative;
-      margin-top: 0;
-      opacity: 0;
-      transition: opacity 0.7s ease-in;
+      position: relative; /* For potential future internal elements */
+      margin-top: 0; /* Removed top margin to remove space */
+      opacity: 0; /* Initially hidden for fade-in effect */
+      transition: opacity 0.7s ease-in; /* Transition for fade-in */
     }
 
     .progress-container {
@@ -208,29 +218,29 @@
       border-radius: 0.5rem;
       margin-bottom: 2rem;
       overflow: hidden;
-      height: 0.6rem;
+      height: 0.6rem; /* Thinner progress bar */
       box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
     }
 
     .progress-bar {
       height: 100%;
       width: 0%;
-      background-color: var(--light-gold); 
+      background-color: var(--light-gold); /* Golden loading bar on quiz page */
       border-radius: 0.5rem;
       transition: width 0.4s ease-in-out;
     }
 
     .question-wrapper {
-      min-height: 280px; 
+      min-height: 280px; /* Consistent height for smooth transitions */
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 0 1rem; 
+      padding: 0 1rem; /* Inner padding for questions */
     }
 
     .question {
       display: none;
-      animation: fadeIn 0.7s ease-out forwards;
+      animation: fadeIn 0.7s ease-out forwards; /* Longer fade in */
     }
 
     .question.active {
@@ -249,17 +259,17 @@
     .options label {
       display: block;
       background: var(--warm-white);
-      padding: 1rem 1.2rem;
+      padding: 1rem 1.2rem; /* More generous padding */
       margin: 0.8rem 0;
-      border-radius: 0.75rem;
+      border-radius: 0.75rem; /* Softer rounded corners */
       cursor: pointer;
       border: 2px solid var(--border-color);
       transition: all 0.3s ease;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08); /* Softer shadow */
     }
 
     .options label:hover {
-      background: #FFFAE6;
+      background: #FFFAE6; /* Very light golden on hover */
       border-color: var(--light-gold);
       transform: translateY(-3px);
       box-shadow: 0 6px 15px rgba(0,0,0,0.15);
@@ -273,26 +283,26 @@
       background: var(--golden-checked);
       border-color: var(--primary-gold);
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      transform: scale(1.01);
+      transform: scale(1.01); /* Subtle pop */
       position: relative;
-      z-index: 2;
+      z-index: 2; /* Ensure checked item is on top */
     }
 
     .navigation-buttons {
       display: flex;
       justify-content: space-between;
       margin-top: 2.5rem;
-      gap: 1rem;
+      gap: 1rem; /* Space between buttons */
     }
 
     .navigation-buttons button {
       background-color: var(--light-gold);
       color: white;
       border: none;
-      padding: 0.8rem 1.8rem;
+      padding: 0.8rem 1.8rem; /* Responsive padding */
       border-radius: 0.6rem;
       cursor: pointer;
-      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-size: clamp(1.5rem, 4vw, 2rem); /* Larger font size for arrows */
       font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -312,20 +322,20 @@
       transform: translateY(0);
     }
 
-    #submitQuiz
+    #submitQuiz { /* This button is now removed from display logic */
       display: none;
     }
 
     #result {
       display: none;
-      margin-top: 1rem;
+      margin-top: 1rem; /* Added top margin */
       padding: clamp(2rem, 6vw, 3rem);
       background: var(--soft-cream);
-      border-radius: 2rem;
+      border-radius: 2rem; /* Even larger border-radius */
       border: 2px dashed var(--light-gold);
       text-align: center;
       box-shadow: 0 12px 35px var(--shadow-color);
-      animation: fadeIn 1s ease-out forwards;
+      animation: fadeIn 1s ease-out forwards; /* Slower fade in */
       max-width: 700px;
       width: 95%;
       position: relative;
@@ -336,23 +346,23 @@
       font-family: 'Playfair Display', serif;
       color: var(--primary-gold);
       font-size: clamp(2rem, 5vw, 3rem);
-      margin-top: 0;
-      margin-bottom: 0;
+      margin-top: 0; /* No top margin */
+      margin-bottom: 0; /* No bottom margin */
       letter-spacing: 0.03em;
     }
     #result img {
-      max-width: clamp(180px, 35vw, 300px);
+      max-width: clamp(180px, 35vw, 300px); /* Slightly bigger image size */
       height: auto;
       border-radius: 1.2rem;
-      margin: 0 auto 0;
-      display: block;
-      border: none;
-      box-shadow: none;
-      animation: scaleIn 1s ease-out forwards;
+      margin: 0 auto 0; /* Adjusted margin: 0 top, auto left/right, 0 bottom */
+      display: block; /* Ensure image is a block element for margin auto to work */
+      border: none; /* No border */
+      box-shadow: none; /* No shadow for the image itself */
+      animation: scaleIn 1s ease-out forwards; /* Longer scale in */
       transition: transform 0.3s ease;
     }
     #result img:hover {
-        transform: scale(1.03);
+        transform: scale(1.03); /* Subtle hover for image */
     }
     #result p {
       font-size: clamp(1rem, 2.5vw, 1.15rem);
@@ -360,8 +370,9 @@
       margin-bottom: 0.8rem;
       color: var(--text-light);
     }
-    #result p.details {
-      text-align: justify;
+    /* Specific styling for details text in result panel */
+    #result p.details { /* Targeted specifically for details paragraph */
+      text-align: justify; /* Justify text */
     }
     #result .category, #result .description-title {
       font-weight: bold;
@@ -370,34 +381,35 @@
       font-size: clamp(1.1rem, 2.8vw, 1.3rem);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      text-align: center; 
+      text-align: center; /* Ensure description title is centered */
     }
     #result .scientific-name {
       font-style: italic;
       color: var(--text-light);
       font-size: clamp(0.9rem, 2.2vw, 1rem);
-      margin-top: 0.2rem;
+      margin-top: 0.2rem; /* Reduced space */
       margin-bottom: 1rem;
     }
     #result .quote {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display', serif; /* Quote in Playfair */
       font-style: italic;
       color: var(--primary-gold);
       margin-top: 2rem;
       font-size: clamp(1.1rem, 2.7vw, 1.25rem);
       padding: 1rem 1.5rem;
-      background-color: #FFFDE7;
+      background-color: #FFFDE7; /* Very light golden background for quote */
       border-left: 5px solid var(--light-gold);
       border-radius: 0.75rem;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .divider {
-      border-top: 1px dashed var(--light-gold);
+      border-top: 1px dashed var(--light-gold); /* Dashed gold divider */
       margin: 2rem auto;
-      width: 95%;
+      width: 95%; /* Extended width */
     }
 
+    /* Consolidated action buttons container */
     #actionButtons {
       margin-top: 2.5rem;
       display: flex;
@@ -406,7 +418,7 @@
       gap: 1rem;
       width: 95%;
       max-width: 750px;
-      display: none;
+      display: none; /* Hidden by default, shown by JS */
     }
 
     #actionButtons button {
@@ -420,9 +432,9 @@
       font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; /* Enable flexbox for content alignment */
+      align-items: center; /* Center content vertically */
+      justify-content: center; /* Center horizontally */
     }
 
     #actionButtons button:hover:not(:disabled) {
@@ -431,7 +443,7 @@
       box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
 
-    /* Loading for buttons ito */
+    /* Loading state for buttons */
     .loading-button {
       cursor: not-allowed !important;
       opacity: 0.7;
@@ -439,7 +451,7 @@
       transform: translateY(0) !important;
       box-shadow: none !important;
     }
-
+    /* New rule: Make disabled buttons gray */
     .modal-buttons button:disabled,
     #actionButtons button:disabled {
         background-color: #cccccc !important; /* Gray background */
@@ -449,6 +461,7 @@
         box-shadow: none !important;
         transform: translateY(0) !important;
     }
+
 
     .spinner {
       border: 3px solid rgba(255, 255, 255, 0.3);
@@ -1705,5 +1718,4 @@
     });
   </script>
 </body>
-
 </html>
